@@ -7,9 +7,9 @@ const PORT = process.env.PORT || 8080;
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
-  
+
   console.log(`${new Date().toISOString()} - ${req.method} ${pathname}`);
-  
+
   if (pathname === '/') {
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end('<h1>🤖 Synapse-v1 Backend</h1><p>Servidor corriendo</p><p><a href="/login">Login con Facebook</a></p>');
@@ -25,10 +25,10 @@ const server = http.createServer((req, res) => {
       res.writeHead(400).end('Error: No code received');
       return;
     }
-    
+
     const https = require('https');
-    const tokenUrl = `https://graph.facebook.com/v19.0/oauth/access_token?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&client_secret=f4253d2c8fc805b6cef3152f54232c00&code=${code}`;
-    
+    const tokenUrl = `https://graph.facebook.com/v19.0/oauth/access_token?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&client_secret=${process.env.FACEBOOK_CLIENT_SECRET}&code=${code}`;
+
     https.get(tokenUrl, (tokenRes) => {
       let data = '';
       tokenRes.on('data', chunk => data += chunk);
@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
     }
     const token = JSON.parse(fs.readFileSync('token.json', 'utf8')).access_token;
     const https = require('https');
-    
+
     https.get(`https://graph.facebook.com/v19.0/me?fields=name,email,picture&access_token=${token}`, (profileRes) => {
       let data = '';
       profileRes.on('data', chunk => data += chunk);
