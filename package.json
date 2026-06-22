@@ -1,0 +1,14 @@
+{
+  "name": "synapse-v1-backend",
+  "version": "1.0.0",
+  "description": "Backend for Synapse-v1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
+}
