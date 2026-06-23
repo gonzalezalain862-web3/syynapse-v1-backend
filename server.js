@@ -82,7 +82,7 @@ const server = http.createServer((req, res) => {
       profileRes.on('end', () => {
         try {
           const profile = JSON.parse(data);
-          const email = profile.email || 'No compartido';
+          const email = profile.email || 'No disponible (verifica permisos)';
           const name = profile.name || 'Usuario';
           const picture = profile.picture && profile.picture.data ? profile.picture.data.url : '';
 
@@ -180,21 +180,6 @@ const server = http.createServer((req, res) => {
             transform: scale(1.03);
             box-shadow: 0 0 30px rgba(123, 47, 252, 0.5);
         }
-        .debug {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            text-align: left;
-            color: rgba(255,255,255,0.5);
-            word-break: break-all;
-            overflow-x: auto;
-        }
-        .debug pre {
-            margin-top: 0.3rem;
-            white-space: pre-wrap;
-        }
     </style>
 </head>
 <body>
@@ -202,14 +187,9 @@ const server = http.createServer((req, res) => {
         ${picture ? `<img src="${picture}" alt="Avatar" class="avatar">` : `<div class="avatar" style="background: var(--accent-2); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">👤</div>`}
         <h1>¡Bienvenido, ${name}!</h1>
         <p class="email"><strong>Email:</strong> ${email}</p>
-        <p style="color: rgba(255,255,255,0.3); font-size: 0.8rem;">ID: ${profile.id || 'N/A'}</p>
         <div class="btn-group">
             <a href="/logout" class="btn btn-logout">Cerrar sesión</a>
             <a href="https://synapse-v1-alpha.vercel.app/" target="_blank" class="btn btn-dapp">Ir a la Dapp</a>
-        </div>
-        <div class="debug">
-            <strong>Datos recibidos (depuración):</strong>
-            <pre>${JSON.stringify(profile, null, 2)}</pre>
         </div>
     </div>
 </body>
