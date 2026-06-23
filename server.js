@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
     });
   }
   else if (pathname === '/login') {
-    const fbUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&scope=public_profile,email,pages_show_list,pages_manage_posts&response_type=code`;
+    const fbUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&scope=public_profile,email&response_type=code`;
     res.writeHead(302, {'Location': fbUrl});
     res.end();
   }
