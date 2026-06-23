@@ -11,8 +11,14 @@ const server = http.createServer((req, res) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${pathname}`);
 
   if (pathname === '/') {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('<h1>🤖 Synapse-v1 Backend</h1><p>Servidor corriendo</p><p><a href="/login">Login con Facebook</a></p>');
+    fs.readFile('public/index.html', 'utf8', (err, data) => {
+      if (err) {
+        res.writeHead(500).end('Error loading page');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
   }
   else if (pathname === '/login') {
     const fbUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&scope=public_profile,email,pages_show_list,pages_manage_posts&response_type=code`;
