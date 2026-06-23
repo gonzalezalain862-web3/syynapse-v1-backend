@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assistent.ai · Soluciones Inteligentes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --text: #ffffff;
+            --bg-start: #0d0a2e;
+            --bg-mid: #050818;
+            --bg-end: #080f1a;
+            --accent-1: #00d4ff;
+            --accent-2: #7b2ffc;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: radial-gradient(ellipse at 20% 20%, var(--bg-start) 0%, var(--bg-mid) 40%, var(--bg-end) 100%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.04);
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: transform 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .feature:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-1);
+        }
+        .feature h3 {
+            color: var(--accent-1);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .feature p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+        }
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+            color: #fff;
+            padding: 0.9rem 2.8rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(123, 47, 252, 0.3);
+        }
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(123, 47, 252, 0.5);
+        }
+        .footer {
+            margin-top: 3rem;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+        .footer a {
+            color: var(--accent-1);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-bg"></div>
+    <div class="container">
+        <h1>Assistent.ai</h1>
+        <p class="subtitle">Soluciones Inteligentes · Flujo del Futuro</p>
+        <div class="features">
+            <div class="feature"><h3>Atención 24/7</h3><p>Sin interrupciones, siempre disponible.</p></div>
+            <div class="feature"><h3>Reduce costos</h3><p>Hasta un 70% de ahorro en atención.</p></div>
+            <div class="feature"><h3>Captura leads</h3><p>Automatiza la generación de clientes.</p></div>
+            <div class="feature"><h3>Integración CRM</h3><p>Instantánea con tu sistema.</p></div>
+            <div class="feature"><h3>Pagos cripto</h3><p>Seguros y sin fronteras.</p></div>
+            <div class="feature"><h3>IA en tu sitio</h3><p>Potencia tu negocio mientras duermes.</p></div>
+        </div>
+        <a href="/login" class="cta-btn">🔐 Iniciar sesión con Facebook</a>
+        <p style="margin-top: 1.5rem; color: rgba(255,255,255,0.6);">Potencia tu negocio con inteligencia artificial conversacional.</p>
+        <div class="footer">
+            © 2026 Assistent.ai · <a href="https://assistent-ai.vercel.app" target="_blank">Ir a la Dapp</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-bg", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": ["#00d4ff", "#7b2ffc", "#ffffff"]
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#00d4ff",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>
