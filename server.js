@@ -32,6 +32,13 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // Si ya hay un token guardado, redirigir al dashboard sin reutilizar el código
+    if (fs.existsSync('token.json')) {
+      res.writeHead(302, {'Location': '/dashboard'});
+      res.end();
+      return;
+    }
+
     const https = require('https');
     const tokenUrl = `https://graph.facebook.com/v19.0/oauth/access_token?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&client_secret=${process.env.FACEBOOK_CLIENT_SECRET}&code=${code}`;
 
@@ -39,15 +46,28 @@ const server = http.createServer((req, res) => {
       let data = '';
       tokenRes.on('data', chunk => data += chunk);
       tokenRes.on('end', () => {
-        const tokenData = JSON.parse(data);
-        if (tokenData.access_token) {
-          fs.writeFileSync('token.json', JSON.stringify(tokenData, null, 2));
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.end('<h1>✅ Login Exitoso!</h1><p><a href="/dashboard">Ir al Dashboard</a></p>');
-        } else {
-          res.writeHead(500).end('Error getting token: ' + data);
+        try {
+          const tokenData = JSON.parse(data);
+          if (tokenData.access_token) {
+            fs.writeFileSync('token.json', JSON.stringify(tokenData, null, 2));
+            // Redirigir al dashboard en lugar de mostrar página para evitar recarga
+            res.writeHead(302, {'Location': '/dashboard'});
+            res.end();
+          } else {
+            // Si el código ya fue usado, redirigir a /login
+            if (tokenData.error && tokenData.error.code === 100) {
+              res.writeHead(302, {'Location': '/login'});
+              res.end();
+            } else {
+              res.writeHead(500).end('Error getting token: ' + data);
+            }
+          }
+        } catch (e) {
+          res.writeHead(500).end('Error parsing token response: ' + e.message);
         }
       });
+    }).on('error', (e) => {
+      res.writeHead(500).end('Request error: ' + e.message);
     });
   }
   else if (pathname === '/dashboard') {
@@ -63,10 +83,16 @@ const server = http.createServer((req, res) => {
       let data = '';
       profileRes.on('data', chunk => data += chunk);
       profileRes.on('end', () => {
-        const profile = JSON.parse(data);
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(`<h1>Bienvenido ${profile.name}!</h1><p>Email: ${profile.email}</p><p><a href="/logout">Logout</a></p>`);
+        try {
+          const profile = JSON.parse(data);
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.end(`<h1>Bienvenido ${profile.name}!</h1><p>Email: ${profile.email}</p><p><a href="/logout">Logout</a></p><p><a href="https://synapse-v1-alpha.vercel.app/" target="_blank">Ir a la Dapp</a></p>`);
+        } catch (e) {
+          res.writeHead(500).end('Error parsing profile: ' + e.message);
+        }
       });
+    }).on('error', (e) => {
+      res.writeHead(500).end('Request error: ' + e.message);
     });
   }
   else if (pathname === '/logout') {
