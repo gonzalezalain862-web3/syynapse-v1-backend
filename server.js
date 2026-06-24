@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
     });
   }
   else if (pathname === '/login') {
-    const fbUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&scope=public_profile,email&response_type=code`;
+    const fbUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=3036760793195313&redirect_uri=${process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080'}/callback&scope=public_profile,email,user_videos,user_posts,user_photos,user_age_range&response_type=code`;
     res.writeHead(302, {'Location': fbUrl});
     res.end();
   }
@@ -110,22 +110,21 @@ const server = http.createServer((req, res) => {
             color: var(--text);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             overflow-x: hidden;
+        }
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 0 auto;
         }
         .card {
             background: rgba(255,255,255,0.04);
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 24px;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.06);
-            max-width: 500px;
-            width: 100%;
+            margin-bottom: 2rem;
             text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
         .avatar {
             width: 90px;
@@ -180,18 +179,134 @@ const server = http.createServer((req, res) => {
             transform: scale(1.03);
             box-shadow: 0 0 30px rgba(123, 47, 252, 0.5);
         }
+        .videos-section {
+            margin-top: 2rem;
+        }
+        .videos-section h2 {
+            color: var(--accent-1);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .video-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            text-align: center;
+            padding: 1rem;
+        }
+        .video-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-1);
+        }
+        .video-card img {
+            width: 100%;
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #0d0a2e;
+        }
+        .video-card h3 {
+            color: #fff;
+            font-size: 0.95rem;
+            margin: 0.75rem 0 0.3rem 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .video-card a {
+            color: var(--accent-1);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0.3rem;
+            font-size: 0.85rem;
+        }
+        .video-card a:hover {
+            text-decoration: underline;
+        }
+        .loading, .no-videos {
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 2rem 0;
+        }
+        .error {
+            color: #ff4d4d;
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 1rem 0;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        ${picture ? `<img src="${picture}" alt="Avatar" class="avatar">` : `<div class="avatar" style="background: var(--accent-2); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">👤</div>`}
-        <h1>¡Bienvenido, ${name}!</h1>
-        <p class="email"><strong>Email:</strong> ${email}</p>
-        <div class="btn-group">
-            <a href="/logout" class="btn btn-logout">Cerrar sesión</a>
-            <a href="https://synapse-v1-alpha.vercel.app/" target="_blank" class="btn btn-dapp">Ir a la Dapp</a>
+    <div class="dashboard-container">
+        <div class="card">
+            ${picture ? `<img src="${picture}" alt="Avatar" class="avatar">` : `<div class="avatar" style="background: var(--accent-2); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">👤</div>`}
+            <h1>¡Bienvenido, ${name}!</h1>
+            <p class="email"><strong>Email:</strong> ${email}</p>
+            <div class="btn-group">
+                <a href="/logout" class="btn btn-logout">Cerrar sesión</a>
+                <a href="https://synapse-v1-alpha.vercel.app/" target="_blank" class="btn btn-dapp">Ir a la Dapp</a>
+            </div>
+        </div>
+
+        <div class="videos-section">
+            <h2>🎥 Mis videos de Facebook</h2>
+            <div id="videos-grid" class="videos-grid">
+                <div class="loading">Cargando videos...</div>
+            </div>
         </div>
     </div>
+
+    <script>
+        async function loadVideos() {
+            const grid = document.getElementById('videos-grid');
+            try {
+                const response = await fetch('/videos');
+                if (!response.ok) {
+                    throw new Error('Error al obtener videos');
+                }
+                const data = await response.json();
+
+                if (data.error) {
+                    grid.innerHTML = '<div class="error">❌ ' + data.error + '</div>';
+                    return;
+                }
+
+                if (data.data && data.data.length > 0) {
+                    grid.innerHTML = data.data.map(video => {
+                        const thumbnail = video.thumbnail_url || '';
+                        const title = video.title || 'Video sin título';
+                        const permalink = video.permalink_url || '#';
+                        const created = video.created_time ? new Date(video.created_time).toLocaleDateString() : 'Fecha desconocida';
+                        return \`
+                            <div class="video-card">
+                                \${thumbnail ? \`<img src="\${thumbnail}" alt="\${title}">\` : '<div style="aspect-ratio:16/9; background:#0d0a2e; border-radius:12px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.2);">🎬 Sin miniatura</div>'}
+                                <h3>\${title}</h3>
+                                <p style="color:rgba(255,255,255,0.3); font-size:0.75rem;">\${created}</p>
+                                <a href="\${permalink}" target="_blank">Ver en Facebook ↗</a>
+                            </div>
+                        \`;
+                    }).join('');
+                } else {
+                    grid.innerHTML = '<div class="no-videos">📭 No tienes videos públicos en Facebook.</div>';
+                }
+            } catch (error) {
+                grid.innerHTML = '<div class="error">❌ Error al cargar los videos. Intenta de nuevo más tarde.</div>';
+                console.error('Error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadVideos);
+    </script>
 </body>
 </html>
           `);
@@ -201,6 +316,34 @@ const server = http.createServer((req, res) => {
       });
     }).on('error', (e) => {
       res.writeHead(500).end('Error de solicitud: ' + e.message);
+    });
+  }
+  else if (pathname === '/videos') {
+    if (!fs.existsSync('token.json')) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'No autenticado' }));
+      return;
+    }
+
+    const token = JSON.parse(fs.readFileSync('token.json', 'utf8')).access_token;
+    const https = require('https');
+
+    https.get(`https://graph.facebook.com/v19.0/me/videos?access_token=${token}&limit=10&fields=id,title,description,thumbnail_url,permalink_url,created_time`, (videosRes) => {
+      let data = '';
+      videosRes.on('data', chunk => data += chunk);
+      videosRes.on('end', () => {
+        try {
+          const videos = JSON.parse(data);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(videos));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Error al procesar la respuesta de Facebook' }));
+        }
+      });
+    }).on('error', (e) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Error de conexión con Facebook' }));
     });
   }
   else if (pathname === '/logout') {
